@@ -1,2 +1,6 @@
 Debug/*
 readme.txt
+.cproject
+.project
+.ccsproject
+.settings/*
