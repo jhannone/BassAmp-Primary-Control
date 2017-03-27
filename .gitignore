@@ -4,3 +4,6 @@ readme.txt
 .project
 .ccsproject
 .settings/*
+.launches/*
+.metadata/*
+
