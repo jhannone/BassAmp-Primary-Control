@@ -11,6 +11,7 @@
 #include "EPWM_init.h"
 #include "PWM_interface.h"
 #include "DMA_init.h"
+#include "Measurement_scaling.h"
 
 
 __interrupt void adc_isr(void);
@@ -54,6 +55,7 @@ int main(void)
 
 	      /* Application initializations */
 	      CommandInit();
+	      MeasurementInit();
 	      ControlInit();
 
 		  // Step 5. User specific code, enable interrupts:
