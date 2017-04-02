@@ -5,24 +5,26 @@
  *      Author: Janne
  */
 
-
+#include "F2806x_Device.h"
+#include "F2806x_Examples.h"
 #include "Common.h"
 #include <stdio.h>
 
 
 
-  float atof_(char str[]);
-  int atoi_(char a[]);
-  int ftoa(char *outbuf, float f, int bufsize);
+float atof_(char str[]);
+int atoi_(char a[]);
+int ftoa(char *outbuf, float f, int bufsize);
 
-  /* Float to binary */
-	int integral;
-	int binaryInt;
-	float binaryFract;
-	float k;
-	float fractional;
-	float temp1;
-	float binaryTotal;
+
+/* Float to binary */
+int integral;
+int binaryInt;
+float binaryFract;
+float k;
+float fractional;
+float temp1;
+float binaryTotal;
 
 
 int ftoa(char *outbuf, float f, int bufsize)
@@ -180,41 +182,10 @@ float atof_(char str[])
 	return(val+n);
 }
 
-//Uint32 ftobin(float f)
-//{
-//	int	i = 1;
-//
-//	binaryInt = 0;
-//	k =0.1f;
-//	binaryFract = 0;
-//
-//	//Separating the integral value from the floating point variable
-//	integral = (int)f;
-//
-//	//Separating the fractional value from the variable
-//	fractional = f - (int)f;
-//
-//	//Loop for converting decimal to binary
-//	while(integral>0)
-//	{
-//	    binaryInt = binaryInt + integral % 2 * i;
-//	    i = i * 10;
-//	    integral = integral / 2;
-//	}
-//
-//	//Loop for converting Fractional value to binary
-//	while(k>0.00000001)
-//	{
-//	    temp1 = fractional *2;
-//	    binaryFract = binaryFract+((int)temp1)*k;
-//	    fractional = temp1 - (int)temp1;
-//	    k = k / 10;
-//	}
-//
-//	//Combining both the integral and fractional binary value.
-//	binaryTotal = binaryInt +binaryFract;
-//
-//
-//
-//
-//}
+
+
+
+
+
+
+

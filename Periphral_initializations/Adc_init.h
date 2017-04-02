@@ -10,7 +10,7 @@
 
 #define ADC_usDELAY  1000L
 
-// write here new definitions for ADC channel names
+
 
 extern void ConfigureAdc();
 
