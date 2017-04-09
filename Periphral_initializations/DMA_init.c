@@ -11,14 +11,8 @@
 
 #include "F2806x_Device.h"     // Headerfile Include File
 #include "F2806x_Examples.h"   // Examples Include File
+#include "DMA_interface.h"
 
-
-
-#pragma DATA_SECTION(DMABuf1,"DMARAM");
-volatile Uint16 DMABuf1[DMA_1_BUF_SIZE];
-
-volatile Uint16 *DMADest;
-volatile Uint16 *DMASource;
 
 void InitDMA(void);
 
@@ -27,6 +21,7 @@ void InitDMA(void);
 void InitDMA(void)
 {
 	Uint8 i;
+	/* See DMA_interface.h and DMA_interface.c for definitions */
 
 		DMAInitialize();
   		// Configure DMA Channel 1

@@ -27,8 +27,10 @@
 #define HB_DEADTIME		20.0		/*ns*/
 
 #define PFC_FSW			120.0		/* kHz*/
-#define PFC_VREF		400.0		/* V */
+#define PFC_VREF		30.0		/* V */
 #define PFC_DUTY		0.0
+
+#define CTRL_FREQ       60000       /*Hz*/
 
 #define AUX_FSW			100.0		/* kHz*/
 #define AUX_VREF		20.0		/* V */
@@ -59,6 +61,7 @@ extern float PFC_duty;
 extern float AUX_duty;
 
 extern void InitControl(void);
+extern void ControlMain(void);
 
 
 

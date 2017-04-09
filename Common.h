@@ -22,7 +22,6 @@ typedef union
 #define _FTOA_TOO_SMALL			0x02
 #define _FTOA_STATUS_OK			0x00
 
-
 extern int ftoa(char *outbuf, float f, int bufsize);
 extern float atof_(char str[]);
 extern int atoi_(char a[]);

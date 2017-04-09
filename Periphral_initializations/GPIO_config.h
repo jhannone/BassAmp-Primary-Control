@@ -90,7 +90,7 @@
 
 #define EN_relay	bit.GPIO58
 
-extern void Gpio_select(void);
+extern void InitGPIO(void);
 
 
 #endif /* GPIO_CONFIG_H_ */

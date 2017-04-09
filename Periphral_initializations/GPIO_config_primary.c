@@ -14,7 +14,7 @@
 #include "GPIO_config.h"
 
 
-void Gpio_select(void)
+void InitGPIO(void)
 {
 
 	EALLOW;
@@ -43,6 +43,14 @@ void Gpio_select(void)
 
 	GpioCtrlRegs.GPAPUD.SCI_TX = 1;    //  (SCI A)
 	GpioCtrlRegs.GPAPUD.SCI_RX = 1;    //  (SCI A)
+
+
+	// Command pull-up
+	GpioCtrlRegs.GPAPUD.LedG = 0;
+    GpioCtrlRegs.GPAPUD.LedR = 0;
+
+
+
 
 
 //	GpioCtrlRegs.GPBPUD.HRPWM_8A = 1;    //  (EPWM8A)	// used for measurement synchronization
@@ -74,11 +82,24 @@ void Gpio_select(void)
 	GpioCtrlRegs.GPAMUX2.SCI_RX = 1;   // (SCI A)
 	GpioCtrlRegs.GPAMUX2.SCI_TX = 1;   // (SCI A)
 
+	// Configure LED as normal GPIO
+    GpioCtrlRegs.GPAMUX2.LedG = 0;
+    GpioCtrlRegs.GPAMUX2.LedR = 0;
+
+
 	// SCI Inputs are synchronized to SYSCLKOUT by default.
 
 	GpioCtrlRegs.GPAQSEL2.SCI_RX = 3;  // Asynch input GPIO28 (SCIRXDA)
 
 
+	// Command as GPIO outputs
+    GpioCtrlRegs.GPADIR.LedG = 1;
+    GpioCtrlRegs.GPADIR.LedR = 1;
+
+
+    // Init state for normal GPIO
+    GpioDataRegs.GPASET.LedG = 1;
+    GpioDataRegs.GPASET.LedR = 1;
 
 	EDIS;
 }

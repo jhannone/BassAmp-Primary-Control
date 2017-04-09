@@ -5,17 +5,20 @@
  *      Author: Janne
  */
 
-
 #include "Common.h"
 #include "F2806x_Device.h"
 #include "F2806x_Examples.h"
 #include "Command_shell.h"
 #include "Control_top.h"
-#include "Control_interface_functions.h"
 #include "PWM_interface.h"
-
+#include "Timer_interface.h"
+#include "DMA_interface.h"
 
 void InitControl(void);
+void ControlMain(void);
+void PFCVoltageControl(void);
+void PFCCurrentControl(void);
+
 
 
 float HB_V_P_gain;
@@ -31,7 +34,6 @@ float PFC_I_I_gain;
 float AUX_V_P_gain;
 float AUX_V_I_gain;
 
-
 float Vout_ref;
 float DC_link_ref;
 float AUX_ref;
@@ -40,7 +42,11 @@ float HB_duty;
 float PFC_duty;
 float AUX_duty;
 
-bool once_initialized = 0;
+float Uin;
+float Iin;
+float Udc;
+
+bool once_initialized = false;
 
 
 
@@ -171,9 +177,11 @@ bool once_initialized = 0;
  * *****************************************************************************
  */
 
+
+
 void InitControl(void)
 {
-	if(once_initialized) // Initialize these parameters only at the startup
+	if(!once_initialized) // Initialize these parameters only at the startup
 	{
 		HB_V_P_gain = HB_V_P_GAIN;
 		HB_V_I_gain = HB_V_I_GAIN;
@@ -197,6 +205,7 @@ void InitControl(void)
 		SetAUX_Fsw((Uint16)AUX_FSW);
 
 		SetHB_DT((Uint16)HB_DEADTIME);
+		InitControlTimer(CTRL_FREQ);    // Timer_interface.c
 
 		once_initialized = true;
 	}
@@ -205,4 +214,23 @@ void InitControl(void)
 	PFC_duty = PFC_DUTY;
 	AUX_duty = AUX_DUTY;
 }
+
+void ControlMain(void)
+{
+    // Refactor this so, that the functionality is run in CLA
+
+    // First, copy all the measurements to local variables. Disable all interrupts while doing this.
+    DINT;
+    Iin = DMABuf1[0];
+    Uin = DMABuf1[2];
+    Udc = DMABuf1[4];
+    EINT;
+
+}
+
+void PFCVoltageControl(void)
+{
+
+}
+
 

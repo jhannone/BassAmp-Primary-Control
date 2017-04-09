@@ -9,7 +9,6 @@
 #define PERIPHRAL_INITIALIZATIONS_DMA_INIT_H_
 
 
-#define DMA_1_BUF_SIZE 40
 
 
 extern void InitDMA(void);

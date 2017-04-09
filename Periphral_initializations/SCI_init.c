@@ -67,10 +67,6 @@ void scia_loopback_init()
 
 	SciaRegs.SCICCR.bit.LOOPBKENA 		= 0; 	// Enable loop back
 	SciaRegs.SCICTL1.bit.SWRESET		= 1;	//Relinquish SCI from Reset
-
-
-
-
 }
 
 // Initalize the SCI FIFO
