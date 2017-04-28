@@ -13,6 +13,7 @@
 #include "PWM_interface.h"
 #include "Timer_interface.h"
 #include "DMA_interface.h"
+#include "Measurement_scaling.h"
 
 void InitControl(void);
 void ControlMain(void);
@@ -26,16 +27,16 @@ float HB_V_I_gain;
 float HB_I_P_gain;
 float HB_I_I_gain;
 
-float PFC_V_P_gain;
-float PFC_V_I_gain;
-float PFC_I_P_gain;
-float PFC_I_I_gain;
+float PFCkpV;
+float PFCkiV;
+float PFCkpI;
+float PFCkiI;
 
 float AUX_V_P_gain;
 float AUX_V_I_gain;
 
 float Vout_ref;
-float DC_link_ref;
+float DClinkRef;
 float AUX_ref;
 
 float HB_duty;
@@ -46,126 +47,21 @@ float Uin;
 float Iin;
 float Udc;
 
+float Ts;
+
+float PFCintegratorV;
+float PFCerrorV;
+float PFCoutputV;
+
+float PFCrefI;
+float PFCintegratorI;
+float PFCerrorI;
+float PFCoutputI;
+
+
+
 bool once_initialized = false;
 
-
-
-
-//#include "control_funcs.h"
-//#include "command_shell.h"
-//#include "extADC.h"
-//#include "PFC_control.h"
-//#include "HB_control.h"
-//#include "xynergyxs.h"
-//#include "misc_funcs.h"
-//#include "models.h"
-//#include "cap_estimator.h"
-//#include <math.h>
-//#include <stdio.h>
-//
-//
-//void ControlHB(void);
-//void ControlMeasCopy(void);
-//void ControlPFC(void);
-//void LogValues(void);
-//void SoftTrip(void);
-//void StartSequence(void);
-//void ZeroCrossDetection(void);
-//void EstimateCap(void);
-//
-//void LogCapestimate(void);
-//
-///* Init values, references and measurement scalings */
-//SCALE_VALUES			meas_scale;
-//LOW_PASS_FILTER 	VDCLINK_filter;
-//REFERENCE_VALUES	ref_value;
-//MEASUREMENT_GAINS meas_gain;
-//
-///* Control output saturation and trip levels */
-//TRIP_LEVELS				trip;
-//SATURATION_LEVS 	saturlevs;
-//
-///* Phase locked loop */
-//PI_Controller			PI_PLL;
-//FPG								THETA_CALC;
-//
-///* DC capacitor estimator */
-//
-///* Output capacitor estimator */
-//
-//bool 			detect_enable 	= appDISABLE;
-//bool 			meas_enable			= appFALSE;
-//
-///* PFC startup & control sequence variables */
-//bool 			PFCStart 							= appFALSE;
-//bool			PFCStartSequenceReady = appFALSE;
-//bool 			DipValueReached 			= appFALSE;
-//bool			PhaseFlag							= appFALSE;
-//bool			ZeroCrossStartup			= appFALSE;
-//bool			ZeroCrossDetected			= appFALSE;
-//bool			WaitingZeroCross			= appFALSE;
-//bool			ZerocrossStartFlag		= appFALSE;
-//bool			disable_ctrl 					= appFALSE;
-//
-//float 		deb_phase =-0.015; // Verified. DO NOT CHANGE THIS VALUE!
-//
-//uint32_t 	PFCStartCounter 	= PFC_START_COUNTER_INITVALUE;
-//uint16_t	PLL_index 				= 9;
-//
-///* Log data variables */
-//bool 			MeasLog 					= appFALSE;
-//uint16_t 	MeasIndex 				= 0;
-//uint16_t  MeasIndexCap			= 0;
-//uint16_t 	PFCIndex 					= 0;
-//float 		MeasLogValues1[MEAS_LOG_MAX];
-//float 		MeasLogValues2[MEAS_LOG_MAX];
-//float 		MeasLogValues3[MEAS_LOG_MAX];
-//float 		MeasLogValues4[MEAS_LOG_MAX];
-//float 		MeasLogValues5[MEAS_LOG_MAX];
-//float 		MeasLogValues6[MEAS_LOG_MAX];
-//
-//
-//// float 		PFCLogValues[MEAS_LOG_MAX];
-//
-///* Software trip control values */
-//bool 			trips;
-//bool 			tripped;
-//
-///* Measurement data variables*/
-//float			OutputVoltage; 							//=	ADC1ConvertedValue[1];
-//float 		ShuntCurrent; 							//= ADC3ConvertedValue[0];
-//float 		VoltageAdjust; 							//= ADC3ConvertedValue[1];
-//float 		DCLinkCurrentPulseRising;  	//= CT_data_rising;
-//float 		DCLinkCurrentPulseFalling; 	//= CT_data_falling;
-//float 		PFC_Current;							 	//= PFC current, combination of sw1 and sw2 currents
-//float 		Vgrid;											//= Rectified grid voltage measurement
-//float 		VDC_link;										//= DC_link voltage
-//
-//float			PFCCurrentProper;
-//float			DCCurrentProper;
-//float			VDC_linkProper;
-//
-//float			OutputVoltageProper;
-//float			ShuntCurrentProper;
-//float			VgridProper;
-//float 		Reducted_Isec;
-//
-//float     VgridFilt;
-//float			VDC_linkFilt;
-//// float			EstCapValue;
-//float			ReferenceVoltage;
-//
-//uint16_t 		StartDelay;
-//
-//float			PFCA;
-//float			PFCB;
-//
-//uint16_t FilteredOutput;
-//float		 FilteredOutputVoltage;
-//
-//char 			faultIdx[25];
-//
-//
 
 /*
  * *****************************************************************************
@@ -188,17 +84,19 @@ void InitControl(void)
 		HB_I_P_gain = HB_I_P_GAIN;
 		HB_I_I_gain = HB_I_I_GAIN;
 
-		PFC_V_P_gain = PFC_V_P_GAIN;
-		PFC_V_I_gain = PFC_V_I_GAIN;
-		PFC_I_P_gain = PFC_I_P_GAIN;
-		PFC_I_I_gain = PFC_I_I_GAIN;
+		PFCkpV = PFC_V_P_GAIN;
+		PFCkiV = PFC_V_I_GAIN;
+		PFCkpI = PFC_I_P_GAIN;
+		PFCkiI = PFC_I_I_GAIN;
 
 		AUX_V_P_gain = AUX_V_P_GAIN;
 		AUX_V_I_gain = AUX_V_I_GAIN;
 
 		Vout_ref 	 = HB_VREF;
-		DC_link_ref	 = PFC_VREF;
+		DClinkRef	 = PFC_VREF;
 		AUX_ref 	 = HB_VREF;
+
+		Ts = 1/CTRL_FREQ;
 
 		SetHB_Fsw((Uint16)HB_FSW);
 		SetPFC_Fsw((Uint16)PFC_FSW);
@@ -208,7 +106,12 @@ void InitControl(void)
 		InitControlTimer(CTRL_FREQ);    // Timer_interface.c
 
 		once_initialized = true;
+
+
 	}
+	PFCoutputV = 0;
+    PFCintegratorV = 0;
+    PFCerrorV = 0;
 
 	HB_duty = HB_DUTY;
 	PFC_duty = PFC_DUTY;
@@ -217,20 +120,74 @@ void InitControl(void)
 
 void ControlMain(void)
 {
-    // Refactor this so, that the functionality is run in CLA
+    // TODO: Move the functionality to CLA
 
     // First, copy all the measurements to local variables. Disable all interrupts while doing this.
     DINT;
-    Iin = DMABuf1[0];
-    Uin = DMABuf1[2];
-    Udc = DMABuf1[4];
+    Iin = DMABuf1[0]*iin_norm - 0.5; // Input current is normally offset by 0.5 because of the used analog measurement. Compensate the offset here.
+    Uin = DMABuf1[2]*uin_norm;
+    Udc = DMABuf1[4]*udc_norm;
     EINT;
 
+    // TODO: Check if PFC voltage control could be executed e.g. with 1/10th of frequency
+    if (PFCState)
+    {
+        PFCVoltageControl();
+        PFCCurrentControl();
+        setPFCDuty(PFCoutputI);
+    }
 }
 
 void PFCVoltageControl(void)
 {
 
+    PFCerrorV  = DClinkRef - Udc;
+    PFCoutputV = PFCerrorV * PFCkpV + PFCintegratorV * PFCkiV * Ts;
+
+    if (PFCoutputV >= 0.85)
+    {
+        PFCoutputV = 0.85;
+        PFCintegratorV =  PFCintegratorV - fabs(PFCerrorV)*(0.015);
+    }
+        else if (PFCoutputV <= 0.00)
+    {
+        PFCoutputV = 0.00;
+        PFCintegratorV = PFCintegratorV + fabs(PFCerrorV)*(0.015);
+    }
+    else
+    {
+        PFCintegratorV = PFCerrorV + PFCintegratorV;
+    }
+
 }
 
+void PFCCurrentControl(void)
+{
+
+    float Imeas;
+
+    if (Iin <= 0)
+        Imeas = Iin*-1;
+    else
+        Imeas = Iin;
+
+    PFCrefI = PFCoutputV*Uin;
+    PFCerrorI  = PFCrefI - Imeas;
+    PFCoutputI = PFCerrorI * PFCkpI + PFCintegratorI * PFCkiI * Ts + ((1-Uin))*0.4; // 0.4 = approximately the relation between the meas gain of Uin and DC link.
+
+    if (PFCoutputI >= 0.95)
+    {
+        PFCoutputI = 0.95;
+        PFCintegratorI =  PFCintegratorI - fabs(PFCerrorI)*(0.10);
+    }
+    else if (PFCoutputI <= 0.05)
+    {
+        PFCoutputI = 0.05;
+        PFCintegratorI = PFCintegratorI + fabs(PFCerrorI)*(0.10);
+    }
+    else
+    {
+        PFCintegratorI = PFCerrorI + PFCintegratorI;
+    }
+}
 

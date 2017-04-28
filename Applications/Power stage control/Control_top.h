@@ -13,10 +13,10 @@
 #define HB_I_P_GAIN 	47.0
 #define HB_I_I_GAIN 	47.0
 
-#define PFC_V_P_GAIN 	0.0002
-#define PFC_V_I_GAIN 	1000
-#define PFC_I_P_GAIN 	0.75
-#define PFC_I_I_GAIN 	150
+#define PFC_V_P_GAIN 	0.01
+#define PFC_V_I_GAIN 	30
+#define PFC_I_P_GAIN 	10
+#define PFC_I_I_GAIN 	1000
 
 #define AUX_V_P_GAIN 	47.0
 #define AUX_V_I_GAIN 	47.0

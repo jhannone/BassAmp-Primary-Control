@@ -26,7 +26,7 @@ bool PFCState = false;
 
 
 /* Variables */
-float PFC_period = PFC_PERIOD; // This needs to be variable to avoid fuckups, when switching frequency is changed (when this is obviousy recalculated).
+float PFC_period = PFC_PERIOD; // This needs to be variable to avoid fuckups, when switching frequency is changed (when this is obviously recalculated).
 
 /* Give duty as float between 0-1 */
 /* Trigger the ADC conversions 200 ns before lowering edge of the switching command. Thus I_in is synchronously measured as from the "peak" of the PFC current.

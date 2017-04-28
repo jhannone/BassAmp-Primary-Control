@@ -103,8 +103,6 @@ void ConfigureAdc(void)
     	AdcRegs.ADCSOC1CTL.bit.TRIGSEL 		= 19;    // set SOC0 start trigger on EPWM8, due to round-robin SOC0 converts first then SOC1 and the SOC 2
     	AdcRegs.ADCSOC2CTL.bit.TRIGSEL 		= 19;    // set SOC0 start trigger on EPWM8, due to round-robin SOC0 converts first then SOC1 and the SOC 2
 
-
-
     	/* Select conversion time window for each ad conversion channel. The default is 7 ADC Clock Cycles, (6 ACQPS plus 1) */
 
 	    AdcRegs.ADCSOC0CTL.bit.ACQPS 		= 6;
