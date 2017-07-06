@@ -1,0 +1,13 @@
+/*
+ * Trip_levels.h
+ *
+ *  Created on: Jul 6, 2017
+ *      Author: janne
+ */
+
+#ifndef APPLICATIONS_POWER_STAGE_CONTROL_TRIP_LEVELS_H_
+#define APPLICATIONS_POWER_STAGE_CONTROL_TRIP_LEVELS_H_
+
+
+
+#endif /* APPLICATIONS_POWER_STAGE_CONTROL_TRIP_LEVELS_H_ */

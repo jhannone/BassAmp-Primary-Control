@@ -19,7 +19,7 @@ void InitControl(void);
 void ControlMain(void);
 void PFCVoltageControl(void);
 void PFCCurrentControl(void);
-
+void CheckTrips(void);
 
 
 float HB_V_P_gain;
@@ -58,6 +58,14 @@ float PFCintegratorI;
 float PFCerrorI;
 float PFCoutputI;
 
+
+// Trip levels
+float Uin_triplevel;
+float Udc_triplevel;
+float Iin_triplevel;
+
+typedef enum Tflag {trip_Iin, trip_Udc, trip_Uin} tflag;
+tflag tripflag;
 
 
 bool once_initialized = false;
@@ -107,6 +115,12 @@ void InitControl(void)
 
 		once_initialized = true;
 
+		// Define trip levels;
+
+		// TODO: check the levels
+		Uin_triplevel = 0.6;
+		Udc_triplevel = 0.6;
+		Iin_triplevel = 0.6;
 
 	}
 	PFCoutputV = 0;
@@ -128,6 +142,8 @@ void ControlMain(void)
     Uin = DMABuf1[2]*uin_norm;
     Udc = DMABuf1[4]*udc_norm;
     EINT;
+
+    CheckTrips();
 
     // TODO: Check if PFC voltage control could be executed e.g. with 1/10th of frequency
     if (PFCState)
@@ -191,3 +207,24 @@ void PFCCurrentControl(void)
     }
 }
 
+void CheckTrips(void)
+{
+    if (Iin > Iin_triplevel)
+    {
+        tripflag = trip_Iin;
+        PFCRun(false);
+    }
+
+    if (Udc > Udc_triplevel)
+    {
+        tripflag = trip_Udc;
+        PFCRun(false);
+    }
+
+    if (Uin > Uin_triplevel)
+    {
+        tripflag = trip_Uin;
+        PFCRun(false);
+    }
+
+}
